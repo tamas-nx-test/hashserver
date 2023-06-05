@@ -5,6 +5,7 @@ set_target_properties(hss
     CXX_STANDARD 17
     CXX_VISIBILITY_PRESET hidden
     VERSION ${${PROJECT_NAME}_VERSION}
+    INSTALL_RPATH "\$ORIGIN/../lib"
 )
 
 target_link_libraries(hss
@@ -14,9 +15,13 @@ target_link_libraries(hss
 
 target_include_directories(hss
   PUBLIC
-    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>" 
+    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
     "$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>"
     "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>"
 )
 
 add_subdirectory(server)
+
+install(TARGETS hss
+  LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}" COMPONENT bin
+)

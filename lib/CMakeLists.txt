@@ -19,10 +19,16 @@ target_include_directories(serverlib
 
 include(GenerateExportHeader)
 set(_export_header "serverlib_export.hpp")
-generate_export_header(serverlib 
+generate_export_header(serverlib
   BASE_NAME "HSS"  # HSS stands for "HaSh Server"
   EXPORT_FILE_NAME "${CMAKE_BINARY_DIR}/${_export_header}"
 )
 target_sources(serverlib PUBLIC ${CMAKE_BINARY_DIR}/${_export_header})
 
 add_subdirectory(hashserver)
+
+install(TARGETS serverlib
+  EXPORT  ${PROJECT_NAME}
+  LIBRARY       DESTINATION "${CMAKE_INSTALL_LIBDIR}"     COMPONENT bin
+  ARCHIVE       DESTINATION "${CMAKE_INSTALL_LIBDIR}"     COMPONENT lib
+  PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}" COMPONENT include)
