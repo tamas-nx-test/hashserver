@@ -83,3 +83,8 @@ Then I added a little bit of boilerplate to both targets and wired up the export
 
 This more or less covers my initial commit. 
 
+
+## Next steps
+
+I played around a bit with the structure (because I really wanted to use PUBLIC_HEADER to install
+the header). Then I added a proper install target as well.
