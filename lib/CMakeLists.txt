@@ -7,12 +7,12 @@ set_target_properties(serverlib
     CXX_STANDARD 17
     CXX_VISIBILITY_PRESET hidden
     VERSION ${${PROJECT_NAME}_VERSION}
-    PUBLIC_HEADER hashserver/serverlib.hpp
+    PUBLIC_HEADER include/hashserver/serverlib.hpp
 )
 
 target_include_directories(serverlib
   PUBLIC
-    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>" 
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
     "$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>"
     "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>"
 )
