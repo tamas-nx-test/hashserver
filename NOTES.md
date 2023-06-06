@@ -101,3 +101,25 @@ on both target platforms.
 
 Since I was adding GoogleTest as well, I decided to set up the test project with a single
 placeholder test and hooked it up to ctest.
+
+## Implementing the hashing
+
+After some consideration, I decided to use OpenSSL instead of Boost for the hashing (Boost looked
+really clunky and the documentation was self-contradicting). Since there were no restrictions on
+the usage of external libraries, I also decided to add in fmt to make my life easier. So ultimately
+my original idea of using Boost for everything was scrapped.
+
+To fulfil the arbitrary-length requirement, I needed a class that can hold the state of the hash.
+The server is going to keep updating this hash state until it encounters a newline. Then it will
+finalize the hash and send it back to the client.
+
+The `Hash` class is a simple resource wrapper around a `EVP_MD_CTX` (OpenSSL's hash context). It
+has a `update` member that takes a `std::string_view` and updates the hash state. It also has a
+`finalize` member that returns the hash as a `std::string`. Finalize also resets the hash state,
+so the same object can be reused to process the next input.
+
+I added some unit tests to verify the above aspects of this class.
+
+Because of the unit testing, I did have to export the `Hasher` class. This is not a big deal,
+but in a real-life scenario I would have probably figured out a way to avoid this (such as linking
+the library statically when building the tests).

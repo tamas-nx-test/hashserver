@@ -1,6 +1,8 @@
 {
   "dependencies": [
     "boost",
-    "gtest"
+    "gtest",
+    "fmt",
+    "openssl"
   ]
 }

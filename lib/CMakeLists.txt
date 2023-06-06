@@ -17,6 +17,8 @@ target_include_directories(serverlib
     "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>"
 )
 
+target_link_libraries(serverlib PRIVATE Boost::boost fmt::fmt OpenSSL::Crypto)
+
 include(GenerateExportHeader)
 set(_export_header "serverlib_export.hpp")
 generate_export_header(serverlib
@@ -31,4 +33,5 @@ install(TARGETS serverlib
   EXPORT  ${PROJECT_NAME}
   LIBRARY       DESTINATION "${CMAKE_INSTALL_LIBDIR}"     COMPONENT bin
   ARCHIVE       DESTINATION "${CMAKE_INSTALL_LIBDIR}"     COMPONENT lib
-  PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}" COMPONENT include)
+  PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}" COMPONENT include
+)
