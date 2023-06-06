@@ -123,3 +123,25 @@ I added some unit tests to verify the above aspects of this class.
 Because of the unit testing, I did have to export the `Hasher` class. This is not a big deal,
 but in a real-life scenario I would have probably figured out a way to avoid this (such as linking
 the library statically when building the tests).
+
+## Implementing the server
+
+My first thought is that I  don't remember if the server needs to by sync or async. Obviously,
+sync is way simplre to implement. There is no set requirement about this in the task description,
+but I also can't decide if this should be an objective. So I reached out with a question but
+since I didn't want to wait, I decided to implement the async version anyway.
+
+Following the Asio model, I had to implement a `Connection` class that holds the individual states
+for each ongoing connection. Therefore, most of the logic lives in there. Each instance of this
+class owns a `Hasher`. I could have read the input character-by-character, but for performance
+reasons I decided to utilize a 1KB buffer.
+
+I'm using `async_read_some` to receive bytes. Processing the input buffer is a little tricky,
+because I may have any number of newlines within it (and a terminating newline may or may not be
+present. If it's not present, I might get it with the next callback. Luckily, the state that the
+`Hasher` retains makes it pretty easy to continuously update the hash state until it's time
+to calculate and send back the response.
+
+With this, the task is code complete. Tomorrow I will finish up the README and create a Github
+Actions workflow to verify the build on both platforms (and potentially fix things that I missed).
+I'll probably also add an integration test.
