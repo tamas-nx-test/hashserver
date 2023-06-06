@@ -1,3 +1,3 @@
 #include "serverlib_export.hpp"
 
-void HSS_EXPORT start_server();
+int HSS_EXPORT start_server();

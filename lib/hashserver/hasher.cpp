@@ -44,7 +44,7 @@ std::string Hasher::finalize() const {
   std::string hash;
   hash.resize(md_len * 2 + 1); // SHA-1 hash is 160 bits = 20 bytes, represented
                                // as 40 hexadecimal characters
-  size_t strlength = 0;
+  std::size_t strlength = 0;
   if (int e = OPENSSL_buf2hexstr_ex(hash.data(), hash.size(), &strlength,
                                     md_value, md_len, '\0') != OK) {
     throw std::runtime_error(fmt::format("Failed to convert hash to string: {}",
