@@ -2,6 +2,7 @@
 #include <fmt/core.h>
 #include <iterator>
 #include <memory>
+#include <string_view>
 
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/read.hpp>
@@ -23,10 +24,6 @@ Connection::Connection(boost::asio::ip::tcp::socket socket)
   input_buffer_.resize(BUFFER_SIZE);
 }
 
-void Connection::handle_write() {}
-
-boost::asio::ip::tcp::socket &Connection::socket() { return socket_; }
-
 void Connection::start() { do_read(); }
 
 void Connection::do_read() {
@@ -41,9 +38,9 @@ void Connection::do_read() {
             boost::asio::async_write(
                 socket_, boost::asio::buffer(*hash),
                 [this, self, hash](boost::system::error_code ec,
-                                   std::size_t length) {
+                                   std::size_t /*length*/) {
                   if (!ec) {
-                    handle_write();
+                    fmt::print("Sent hash: {}\n", *hash);
                   }
                 });
             do_read();
@@ -52,10 +49,11 @@ void Connection::do_read() {
 
           // we have read some amount of characters, some of which may be
           // newlines
+          std::string_view text(input_buffer_.data(), length);
           boost::char_separator<char> sep("\n");
-          boost::tokenizer<boost::char_separator<char>> tokens(input_buffer_,
-                                                               sep);
-          bool terminated = input_buffer_.back() == '\n';
+          boost::tokenizer<boost::char_separator<char>> tokens(text, sep);
+          bool terminated = text.back() == '\n';
+          auto num_tokens = std::distance(begin(tokens), end(tokens));
 
           for (auto it = begin(tokens); it != end(tokens); ++it) {
             hasher_.update(*it);
@@ -65,14 +63,16 @@ void Connection::do_read() {
             if (!is_last || terminated) {
               // the last token is potentially an incomplete line (no newline at
               // the end) so only finalize and send back the hash if it's
-              // complete.
+              // complete. We only want to send back the hash if we have a
+              // complete line. If it's not the last token, we know it's a
+              // complete line because we split on newlines.
               auto hash = std::make_shared<std::string>(hasher_.finalize());
               boost::asio::async_write(
                   socket_, boost::asio::buffer(*hash),
                   [this, self, hash](boost::system::error_code ec,
-                                     std::size_t length) {
+                                     std::size_t /*length*/) {
                     if (!ec) {
-                      handle_write();
+                      fmt::print("Sent hash: {}\n", *hash);
                     }
                   });
             }
