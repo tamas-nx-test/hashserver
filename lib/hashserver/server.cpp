@@ -18,7 +18,6 @@ Server::Server(boost::asio::io_context &io_context, short port)
 }
 
 void Server::do_accept() {
-  fmt::print("do_accept\n");
   acceptor_.async_accept(
       [this](boost::system::error_code ec, tcp::socket socket) {
         if (!ec) {
