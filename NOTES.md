@@ -114,7 +114,7 @@ The server is going to keep updating this hash state until it encounters a newli
 finalize the hash and send it back to the client.
 
 The `Hash` class is a simple resource wrapper around a `EVP_MD_CTX` (OpenSSL's hash context). It
-has a `update` member that takes a `std::string_view` and updates the hash state. It also has a
+has a `update` member that takes a `boost::string_view` and updates the hash state. It also has a
 `finalize` member that returns the hash as a `std::string`. Finalize also resets the hash state,
 so the same object can be reused to process the next input.
 

@@ -1,0 +1,88 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        - {
+            name: "Windows Latest MSVC", artifact: "Windows-MSVC.tar.xz",
+            os: windows-latest,
+            build_type: "Release", cc: "cl", cxx: "cl",
+            environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+          }
+        - {
+            name: "Ubuntu Latest GCC", artifact: "Linux.tar.xz",
+            os: ubuntu-20.04,
+            build_type: "Release", cc: "gcc", cxx: "g++"
+          }
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: TheMrMilchmann/setup-msvc-dev@v2
+      with:
+        arch: x64
+
+    - name: Install dependencies (Ubuntu)
+      if: startsWith(matrix.config.os, 'ubuntu')
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc-11 g++-11
+
+    - name: Install Ninja
+      id: ninja
+      uses: seanmiddleditch/gha-setup-ninja@master
+
+    - name: Install Conan
+      id: conan
+      uses: turtlebrowser/get-conan@main
+      with:
+        version: 1.60.1
+
+    - name: Conan version
+      run: |
+        echo "${{ steps.conan.outputs.version }}"
+
+    - name: Create build directory
+      run: |
+        mkdir build
+
+    - name: Install conan deps (Windows)
+      if: startsWith(matrix.config.os, 'windows')
+      run: |
+        cd build
+        conan install .. --build=missing -pr ..\profiles\windows\x86_64-release-msvc17
+
+    - name: Install conan deps (Ubuntu)
+      if: startsWith(matrix.config.os, 'ubuntu')
+      run: |
+        cd build
+        conan install .. --build=missing -pr ../profiles/linux/x86_64-release
+
+    - name: Build (Ubuntu)
+      if: startsWith(matrix.config.os, 'ubuntu')
+      run: |
+        cd build
+        cmake .. -DCMAKE_TOOLCHAIN_FILE="conan_paths.cmake" -DCMAKE_BUILD_TYPE=Release -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_INSTALL_PREFIX=dist
+        ninja
+
+    - name: Build (Windows)
+      if: startsWith(matrix.config.os, 'windows')
+      run: |
+        cd build
+        cmake .. -DCMAKE_TOOLCHAIN_FILE="conan_paths.cmake" -DCMAKE_BUILD_TYPE=Release -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_INSTALL_PREFIX=dist
+        ninja
+
+    - name: Test
+      run: |
+        cd build
+        ctest .

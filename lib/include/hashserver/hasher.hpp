@@ -2,8 +2,8 @@
 
 #include <memory>
 #include <string>
-#include <string_view>
 
+#include <boost/utility/string_view.hpp>
 #include <openssl/evp.h>
 
 #include "serverlib_export.hpp"
@@ -17,7 +17,7 @@ public:
   HSS_EXPORT Hasher();
   /// \brief Feed data to the hash context
   /// \param data The data to be hashed. Can be empty (resulting in no-op).
-  HSS_EXPORT void update(std::string_view data);
+  HSS_EXPORT void update(boost::string_view data);
   /// \brief Finalize the digest and get the hexadecimal representation of the
   /// hash, then reset the context. After this call, the hasher is ready to
   /// receive new data.

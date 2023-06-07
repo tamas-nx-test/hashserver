@@ -23,7 +23,7 @@ void init(EVP_MD_CTX *ctx) {
 
 Hasher::Hasher() : ctx_(EVP_MD_CTX_new(), EVP_MD_CTX_free) { init(ctx_.get()); }
 
-void Hasher::update(std::string_view data) {
+void Hasher::update(boost::string_view data) {
   if (data.empty()) {
     return;
   }

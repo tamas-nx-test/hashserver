@@ -7,6 +7,7 @@ add_executable(hsstest
 
 target_link_libraries(hsstest
   serverlib
+  Boost::boost
   GTest::gtest GTest::gtest_main
 )
 
