@@ -1,0 +1,12 @@
+[requires]
+boost/1.82.0
+openssl/3.1.1
+gtest/cci.20210126
+fmt/9.1.0
+
+[options]
+boost/*:header_only=True
+
+[generators]
+CMakeDeps
+CMakeToolchain
