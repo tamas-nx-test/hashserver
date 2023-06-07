@@ -1,0 +1,43 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, windows-2019] # windows-2019 has Windows 10 and VS 2019 pre-installed
+        compiler: [gcc, msvc]
+        exclude:
+          - os: ubuntu-20.04
+            compiler: msvc
+          - os: windows-2019
+            compiler: gcc
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install dependencies (Ubuntu)
+      if: startsWith(matrix.os, 'ubuntu')
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc-11 g++-11 ninja-build
+
+    - name: Configure CMake (GCC on Ubuntu)
+      if: matrix.os == 'ubuntu-20.04' && matrix.compiler == 'gcc'
+      run: |
+        export CC=/usr/bin/gcc-11
+        export CXX=/usr/bin/g++-11
+        cmake -B build -G Ninja
+
+    - name: Configure CMake (MSVC on Windows)
+      if: matrix.os == 'windows-2019' && matrix.compiler == 'msvc'
+      run: |
+        cmake -B build -G "Ninja" -A x64
+
+    - name: Build
+      run: cmake --build build --config Release
