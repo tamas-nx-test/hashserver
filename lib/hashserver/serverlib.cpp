@@ -4,7 +4,7 @@
 
 using namespace hss;
 
-int HSS_EXPORT start_server() {
+extern "C" int HSS_EXPORT start_server() {
   try {
     boost::asio::io_context io_context;
 
