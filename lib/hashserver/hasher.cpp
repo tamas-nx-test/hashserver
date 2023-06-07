@@ -4,6 +4,7 @@
 #include <system_error>
 
 #include <fmt/format.h>
+#include <fmt/printf.h>
 #include <openssl/err.h>
 
 #include "hashserver/hasher.hpp"

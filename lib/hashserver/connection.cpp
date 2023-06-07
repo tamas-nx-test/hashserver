@@ -56,6 +56,7 @@ void Connection::do_read() {
           auto num_tokens = std::distance(begin(tokens), end(tokens));
 
           for (auto it = begin(tokens); it != end(tokens); ++it) {
+            fmt::print("Received token: {}\n", *it);
             hasher_.update(*it);
 
             bool is_last = next(it) == end(tokens);
@@ -73,7 +74,7 @@ void Connection::do_read() {
                   [this, self, hash](boost::system::error_code ec,
                                      std::size_t /*length*/) {
                     if (!ec) {
-                      fmt::print("Sent hash: {}\n", *hash);
+                      fmt::print("Sent hash: {}", *hash);
                     }
                   });
             }
