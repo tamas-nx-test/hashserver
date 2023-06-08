@@ -19,6 +19,10 @@ target_include_directories(serverlib
 
 target_link_libraries(serverlib PUBLIC Boost::boost Boost::headers fmt::fmt OpenSSL::Crypto)
 
+if(WIN32)
+  target_compile_definitions(serverlib PUBLIC _WIN32_WINNT=0x0601)
+endif()
+
 include(GenerateExportHeader)
 set(_export_header "serverlib_export.hpp")
 generate_export_header(serverlib
