@@ -7,5 +7,8 @@ include(Dependencies)
 add_subdirectory(src)
 add_subdirectory(lib)
 
+set(CPACK_GENERATOR ZIP)
+include(CPack)
+
 enable_testing()
 add_subdirectory(test)
