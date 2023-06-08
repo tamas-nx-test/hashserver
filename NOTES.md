@@ -145,3 +145,39 @@ to calculate and send back the response.
 With this, the task is code complete. Tomorrow I will finish up the README and create a Github
 Actions workflow to verify the build on both platforms (and potentially fix things that I missed).
 I'll probably also add an integration test.
+
+## Implementing the Github Actions build
+
+My intention with adding a GHA build was to ensure that my solution keeps working on both required
+platforms (since I only run Windows occasionally in a VM). This turned out to be a bit of a pain
+due to the limitations of github actions and vcpkg. After some experimentation, I decided to ditch
+vcpkg in favor of Conan 2.x. This was also not the best choice because of a [bug][1] that I
+encountered, so downgrade Conan. Even though this took quite a bit of effort, this allowed me
+to find bugs in the build process that I could correct before finishing the task.
+
+## Adding the integration tests
+
+For the integration tests, I wanted a running client that sends known inputs and verifies the hashes
+that are returned.
+
+```py
+test_cases = {
+    "": "DA39A3EE5E6B4B0D3255BFEF95601890AFD80709",
+    "foobar": "8843D7F92416211DE9EBB963FF4CE28125932878",
+    "Hello, World": "907D14FB3AF2B0D4F18C2D46ABE8AEDCE17367BD",
+    "The quick brown fox jumps over the lazy dog": "2FD4E1C67A2D28FCED849EE1BB76E7391B93EB12",
+    "a " * 50000: "49A80174FA692B366216DBEFE94851ACBA042410",
+}
+```
+
+I tried to come up with edge cases: empty input, some "normal" input, and finally a very long input
+(that exceeds the read buffer size).
+
+# Conclusion
+
+This was a great exercise with just the right amount of complexity that allowed me to express
+myself and highlight my engineering approach very well. In hindsight, I regret not spending more
+effort on atomic and well structured commits. That is something I find very important in a real-
+life scenario.
+
+[1]: https://github.com/conan-io/conan/issues/10041#issuecomment-1581649576
