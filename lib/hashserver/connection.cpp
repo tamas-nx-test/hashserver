@@ -49,7 +49,7 @@ void Connection::do_read() {
 
           // we have read some amount of characters, some of which may be
           // newlines
-          std::string_view text(input_buffer_.data(), length);
+          std::string text(input_buffer_.data(), length);
           boost::char_separator<char> sep("\n");
           boost::tokenizer<boost::char_separator<char>> tokens(text, sep);
           bool terminated = text.back() == '\n';

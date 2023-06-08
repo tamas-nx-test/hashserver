@@ -17,7 +17,7 @@ target_include_directories(serverlib
     "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>"
 )
 
-target_link_libraries(serverlib PRIVATE Boost::boost fmt::fmt OpenSSL::Crypto)
+target_link_libraries(serverlib PUBLIC Boost::boost Boost::headers fmt::fmt OpenSSL::Crypto)
 
 include(GenerateExportHeader)
 set(_export_header "serverlib_export.hpp")
