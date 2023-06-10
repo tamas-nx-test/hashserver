@@ -11,13 +11,16 @@
 namespace hss {
 
 /// \brief Hasher class. The main purpose of this class is to hold the hashing
-///   state to allow for incremental hashing.
+/// state to allow for incremental hashing.
 class Hasher {
 public:
   HSS_EXPORT Hasher();
   /// \brief Feed data to the hash context
   /// \param data The data to be hashed. Can be empty (resulting in no-op).
   HSS_EXPORT void update(boost::string_view data);
+  /// \brief Feed data to the hash context.
+  /// \param data A single char to be hashed. Can be empty (resulting in no-op).
+  HSS_EXPORT void update(char data);
   /// \brief Finalize the digest and get the hexadecimal representation of the
   /// hash, then reset the context. After this call, the hasher is ready to
   /// receive new data.

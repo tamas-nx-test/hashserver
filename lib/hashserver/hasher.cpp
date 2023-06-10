@@ -33,6 +33,13 @@ void Hasher::update(boost::string_view data) {
   }
 }
 
+void Hasher::update(char data) {
+  if (int e = EVP_DigestUpdate(ctx_.get(), &data, 1) != OK) {
+    throw std::runtime_error(fmt::format("Failed to update hash context: {}",
+                                         ERR_error_string(e, NULL)));
+  }
+}
+
 std::string Hasher::finalize() const {
   unsigned char md_value[EVP_MAX_MD_SIZE];
   unsigned int md_len;
