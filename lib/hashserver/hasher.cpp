@@ -11,7 +11,7 @@
 
 namespace hss {
 
-constexpr int OK = 1; // Some OpenSSL functions return 1 on success
+constexpr int OK = 1; // Some OpenSSL functions return 1 on success.
 
 void init(EVP_MD_CTX *ctx) {
   if (!EVP_DigestInit_ex2(ctx, EVP_sha1(), NULL)) {
@@ -51,7 +51,7 @@ std::string Hasher::finalize() const {
 
   std::string hash;
   hash.resize(md_len * 2 + 1); // SHA-1 hash is 160 bits = 20 bytes, represented
-                               // as 40 hexadecimal characters
+                               // as 40 hexadecimal characters.
   std::size_t strlength = 0;
   if (int e = OPENSSL_buf2hexstr_ex(hash.data(), hash.size(), &strlength,
                                     md_value, md_len, '\0') != OK) {

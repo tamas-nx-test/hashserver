@@ -15,7 +15,7 @@ On both Linux and Windows, use the following steps to build this project:
 
 ```sh
 $ mkdir build && cd build
-$ conan install .. -pr ../profiles/<os>/x86_64_release --build=missing  # <os> is either linux or windows
+$ conan install .. -pr ../profiles/<os>/x86_64-release --build=missing  # <os> is either linux or windows
 $ cmake .. -DCMAKE_TOOLCHAIN_FILE="conan_paths.cmake" -DCMAKE_BUILD_TYPE=Release -G Ninja -DCMAKE_INSTALL_PREFIX=dist
 $ ninja install
 ```
