@@ -15,7 +15,7 @@ namespace hss {
 class Hasher {
 public:
   HSS_EXPORT Hasher();
-  /// \brief Feed data to the hash context
+  /// \brief Feed data to the hash context.
   /// \param data The data to be hashed. Can be empty (resulting in no-op).
   HSS_EXPORT void update(boost::string_view data);
   /// \brief Feed data to the hash context.
