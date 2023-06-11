@@ -13,6 +13,8 @@ namespace hss {
 
 constexpr int OK = 1; // Some OpenSSL functions return 1 on success.
 
+namespace {
+
 void init(EVP_MD_CTX *ctx) {
   if (!EVP_DigestInit_ex2(ctx, EVP_sha1(), NULL)) {
     throw std::runtime_error(
@@ -20,6 +22,8 @@ void init(EVP_MD_CTX *ctx) {
                     ERR_error_string(ERR_get_error(), NULL)));
   }
 }
+
+} // namespace
 
 Hasher::Hasher() : ctx_(EVP_MD_CTX_new(), EVP_MD_CTX_free) { init(ctx_.get()); }
 
