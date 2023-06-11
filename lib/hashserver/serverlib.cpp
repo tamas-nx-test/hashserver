@@ -13,6 +13,8 @@ extern "C" int HSS_EXPORT start_server() {
     io_context.run();
   } catch (std::exception &e) {
     fmt::print("Exception: {}\n", e.what());
+  } catch (...) {
+    fmt::print("Unknown exception\n");
   }
 
   return 0;
