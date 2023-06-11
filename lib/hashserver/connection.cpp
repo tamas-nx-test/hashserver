@@ -1,5 +1,7 @@
+#include <boost/utility/string_view_fwd.hpp>
 #include <cstddef>
 #include <iterator>
+#include <locale>
 #include <memory>
 
 #include <boost/asio/buffer.hpp>
@@ -9,9 +11,14 @@
 #include <boost/range/iterator_range.hpp>
 #include <boost/utility/string_view.hpp>
 #include <fmt/printf.h>
+#include <variant>
 
 #include "hashserver/connection.hpp"
 #include "hashserver/hasher.hpp"
+
+using boost::string_view;
+using std::begin;
+using std::end;
 
 namespace hss {
 
@@ -45,17 +52,29 @@ void Connection::do_read() {
         if (!ec) {
           fmt::print("Read {} bytes\n", length);
 
-          // process the input buffer one byte at a time
-          for (auto &it : boost::make_iterator_range(
-                   input_buffer_.data(), input_buffer_.data() + length)) {
-            // Whenever we encounter a newline, we send back the hash of the
-            // currently accumulated data (excluding the newline). This also
-            // resets the hasher.
-            if (it == '\n') {
-              send_hash(socket_, hasher_);
-              continue;
+          for (auto it = begin(input_buffer_),
+                    end = begin(input_buffer_) + length;
+               it != end;) {
+            // Input represents the the full input within the input buffer
+            // (which can be up to intpu_buffer_.size() bytes long).
+            string_view input(&*it, std::distance(it, end));
+
+            // Construct a string_view from the current character until the
+            // first newline or the end of the input and consume that chunk.
+            string_view::size_type newline = input.find('\n');
+            std::size_t slen = std::distance(
+                it, newline != string_view::npos ? it + newline : end);
+            string_view chunk(&*it, slen);
+            hasher_.update(chunk);
+
+            // If there was no newline, that means we've reached the end of the
+            // input buffer and we need to wait for further input with a newline
+            // in the next callback.
+            if (newline == string_view::npos) {
+              break;
             }
-            hasher_.update(it);
+            send_hash(socket_, hasher_);
+            it = it + newline + 1;
           }
         }
         do_read();
