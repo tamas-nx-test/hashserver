@@ -1,5 +1,6 @@
 import socket
 import textwrap
+import time
 
 
 test_cases = {
@@ -12,13 +13,20 @@ test_cases = {
 }
 
 
-def send_data(data: str) -> str:
+def send_str(data: str) -> str:
+    return send_data(f"{data}\n".encode("utf-8"))
+
+
+def send_data(data: bytes, receive: bool = True) -> str:
     HOST, PORT = 'localhost', 8001
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         try:
             sock.connect((HOST, PORT))
-            sock.sendall(f"{data}\n".encode("utf-8"))
-            received = str(sock.recv(1024), "utf-8")
+            sock.sendall(data)
+            if receive:
+                received = str(sock.recv(1024), "utf-8")
+            else:
+                received = ""
         except socket.error as e:
             print("Socket error: ", e)
         except Exception as e:
@@ -51,7 +59,7 @@ def test() -> bool:
     results = []
     for data, expected in test_cases.items():
         print(f"- Test-case: '{textwrap.shorten(data, width=25)}'")
-        received = send_data(data)
+        received = send_str(data)
         print(f"  Expected: {expected}")
         print(f"  Received: {received}")
         result = received == expected
@@ -59,6 +67,12 @@ def test() -> bool:
         print()
         results.append(result)
     return all(results)
+
+
+def test_without_newline():
+    send_data(b"\x41\x00\x42", False)
+    time.sleep(1)
+    return send_data(b"\x0A")
 
 
 
@@ -70,7 +84,13 @@ if __name__ == "__main__":
 
     print("\n*** Sending known strings ***")
     passed = test()
-    print("\n*** All tests passed! ***" if passed else "*** Some tests failed! ***")
+    print("\n*** Known string tests passed! ***" if passed else "*** Some tests failed! ***")
 
+    print("\n*** Sending bytes containing \\0 ***")
+    expected = "DA39A3EE5E6B4B0D3255BFEF95601890AFD80709"
+    received = test_without_newline()
+    print(f"  Expected: {expected}")
+    print(f"  Received: {received}")
+    print(f"*** \\0 test passed ***" if received == expected else "*** \\0 test failed ***")
 
     sys.exit(0 if passed else 1)
