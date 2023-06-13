@@ -18,7 +18,6 @@
 
 using boost::string_view;
 using std::begin;
-using std::end;
 
 namespace hss {
 
